@@ -1,0 +1,108 @@
+#!/bin/bash
+
+SUID_BIT=2048
+SGID_BIT=1024
+STICKY_BIT=512
+OWNER_READ=256
+OWNER_WRITE=128
+OWNER_EXECUTE=64
+GROUP_READ=32
+GROUP_WRITE=16
+GROUP_EXECUTE=8
+OTHER_READ=4
+OTHER_WRITE=2
+OTHER_EXECUTE=1
+
+for file in "$@"
+do
+   if test -e "$file"
+   then
+      user=$(stat -c %U "$file")
+      group=$(stat -c %G "$file")
+      permsHuman=$(stat -c %A "$file")
+      permsDec=$((8#$(stat -c %a "$file")))
+
+      echo -e "\nFile : $file"
+      echo -e "Permissions : \e[1m$permsHuman\e[0m"
+
+      if test $(($permsDec & $OWNER_READ)) -eq $OWNER_READ
+      then
+         echo -e "\e[32mThe user \e[1m$user\e[0m\e[32m has read permissions on this file\e[39m"
+      else
+         echo -e "\e[31mThe user \e[1m$user\e[0m\e[31m does not have read permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $OWNER_WRITE)) -eq $OWNER_WRITE
+      then
+         echo -e "\e[32mThe user \e[1m$user\e[0m\e[32m has write permissions on this file\e[39m"
+      else
+         echo -e "\e[31mThe user \e[1m$user\e[0m\e[31m does not have write permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $OWNER_EXECUTE)) -eq $OWNER_EXECUTE
+      then
+         echo -e "\e[32mThe user \e[1m$user\e[0m\e[32m has execute permissions on this file\e[39m"
+      else
+         echo -e "\e[31mThe user \e[1m$user\e[0m\e[31m does not have execute permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $GROUP_READ)) -eq $GROUP_READ
+      then
+         echo -e "\e[32mUsers in the group \e[1m$group\e[0m\e[32m have read permissions on this file\e[39m"
+      else
+         echo -e "\e[31mUsers in the group \e[1m$group\e[0m\e[31m do not have read permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $GROUP_WRITE)) -eq $GROUP_WRITE
+      then
+         echo -e "\e[32mUsers in the group \e[1m$group\e[0m\e[32m have write permissions on this file\e[39m"
+      else
+         echo -e "\e[31mUsers in the group \e[1m$group\e[0m\e[31m do not have write permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $GROUP_EXECUTE)) -eq $GROUP_EXECUTE
+      then
+         echo -e "\e[32mUsers in the group \e[1m$group\e[0m\e[32m have execute permissions on this file\e[39m"
+      else
+         echo -e "\e[31mUsers in the group \e[1m$group\e[0m\e[31m do not have execute permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $OTHER_READ)) -eq $OTHER_READ
+      then
+         echo -e "\e[32mOther users have read permissions on this file\e[39m"
+      else
+         echo -e "\e[31mOther users do not have read permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $OTHER_WRITE)) -eq $OTHER_WRITE
+      then
+         echo -e "\e[32mOther users have write permissions on this file\e[39m"
+      else
+         echo -e "\e[31mOther users do not have write permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $OTHER_EXECUTE)) -eq $OTHER_EXECUTE
+      then
+         echo -e "\e[32mOther users have execute permissions on this file\e[39m"
+      else
+         echo -e "\e[31mOther users do not have execute permissions on this file\e[39m"
+      fi
+
+      if test $(($permsDec & $SUID_BIT)) -eq $SUID_BIT
+      then
+         echo -e "\e[32mUsers executing this file will do so with \e[1m$user\e[0m\e[32m user's privileges\e[39m"
+      fi
+
+      if test $(($permsDec & $SGID_BIT)) -eq $SGID_BIT
+      then
+         echo -e "\e[32mUsers executing this file will do so with \e[1m$user\e[0m\e[32m group's privileges\e[39m"
+      fi
+
+      if test $(($permsDec & $STICKY_BIT)) -eq $STICKY_BIT
+      then
+         echo -e "\e[32mThe sticky bit is set on this file\e[39m"
+      fi
+   else
+      echo "\e[31m$file does not exist\e[39m"
+   fi
+done
