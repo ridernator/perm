@@ -1,30 +1,44 @@
 #!/bin/bash
+# Script which verbosely prints out the permissions of files or folders passed to it
+# Ciaron Rider (ciaron.rider+github@gmail.com)
 
-SUID_BIT=2048
-SGID_BIT=1024
-STICKY_BIT=512
-OWNER_READ=256
-OWNER_WRITE=128
-OWNER_EXECUTE=64
-GROUP_READ=32
-GROUP_WRITE=16
-GROUP_EXECUTE=8
-OTHER_READ=4
-OTHER_WRITE=2
+# Bits we are looking for
 OTHER_EXECUTE=1
+  OTHER_WRITE=2
+   OTHER_READ=4
+GROUP_EXECUTE=8
+  GROUP_WRITE=16
+   GROUP_READ=32
+OWNER_EXECUTE=64
+  OWNER_WRITE=128
+   OWNER_READ=256
+   STICKY_BIT=512
+     SGID_BIT=1024
+     SUID_BIT=2048
 
+# For each file passed in as a command line argument
 for file in "$@"
 do
+   # Make sure the file /folder exists
    if test -e "$file"
    then
+      # Find the file's owner
       user=$(stat -c %U "$file")
+      
+      # Find the group owner of the file
       group=$(stat -c %G "$file")
+      
+      # Human readable permissions of the file
       permsHuman=$(stat -c %A "$file")
+      
+      # Decimal version of the permissions
       permsDec=$((8#$(stat -c %a "$file")))
 
+      # Print out filename and human readable permissions
       echo -e "\nFile : $file"
       echo -e "Permissions : \e[1m$permsHuman\e[0m"
 
+      # Test if the owner has read access
       if test $(($permsDec & $OWNER_READ)) -eq $OWNER_READ
       then
          echo -e "\e[32mThe user \e[1m$user\e[0m\e[32m has read permissions on this file\e[39m"
@@ -32,6 +46,7 @@ do
          echo -e "\e[31mThe user \e[1m$user\e[0m\e[31m does not have read permissions on this file\e[39m"
       fi
 
+      # Test if the owner has write access
       if test $(($permsDec & $OWNER_WRITE)) -eq $OWNER_WRITE
       then
          echo -e "\e[32mThe user \e[1m$user\e[0m\e[32m has write permissions on this file\e[39m"
@@ -39,6 +54,7 @@ do
          echo -e "\e[31mThe user \e[1m$user\e[0m\e[31m does not have write permissions on this file\e[39m"
       fi
 
+      # Test if the owner has execute access
       if test $(($permsDec & $OWNER_EXECUTE)) -eq $OWNER_EXECUTE
       then
          echo -e "\e[32mThe user \e[1m$user\e[0m\e[32m has execute permissions on this file\e[39m"
@@ -46,6 +62,7 @@ do
          echo -e "\e[31mThe user \e[1m$user\e[0m\e[31m does not have execute permissions on this file\e[39m"
       fi
 
+      # Test if the group users have read access
       if test $(($permsDec & $GROUP_READ)) -eq $GROUP_READ
       then
          echo -e "\e[32mUsers in the group \e[1m$group\e[0m\e[32m have read permissions on this file\e[39m"
@@ -53,6 +70,7 @@ do
          echo -e "\e[31mUsers in the group \e[1m$group\e[0m\e[31m do not have read permissions on this file\e[39m"
       fi
 
+      # Test if the group users have write access
       if test $(($permsDec & $GROUP_WRITE)) -eq $GROUP_WRITE
       then
          echo -e "\e[32mUsers in the group \e[1m$group\e[0m\e[32m have write permissions on this file\e[39m"
@@ -60,6 +78,7 @@ do
          echo -e "\e[31mUsers in the group \e[1m$group\e[0m\e[31m do not have write permissions on this file\e[39m"
       fi
 
+      # Test if the group users have execute access
       if test $(($permsDec & $GROUP_EXECUTE)) -eq $GROUP_EXECUTE
       then
          echo -e "\e[32mUsers in the group \e[1m$group\e[0m\e[32m have execute permissions on this file\e[39m"
@@ -67,6 +86,7 @@ do
          echo -e "\e[31mUsers in the group \e[1m$group\e[0m\e[31m do not have execute permissions on this file\e[39m"
       fi
 
+      # Test if everybody else has read access
       if test $(($permsDec & $OTHER_READ)) -eq $OTHER_READ
       then
          echo -e "\e[32mOther users have read permissions on this file\e[39m"
@@ -74,6 +94,7 @@ do
          echo -e "\e[31mOther users do not have read permissions on this file\e[39m"
       fi
 
+      # Test if everybody else has write access
       if test $(($permsDec & $OTHER_WRITE)) -eq $OTHER_WRITE
       then
          echo -e "\e[32mOther users have write permissions on this file\e[39m"
@@ -81,6 +102,7 @@ do
          echo -e "\e[31mOther users do not have write permissions on this file\e[39m"
       fi
 
+      # Test if everybody else has execute access
       if test $(($permsDec & $OTHER_EXECUTE)) -eq $OTHER_EXECUTE
       then
          echo -e "\e[32mOther users have execute permissions on this file\e[39m"
@@ -88,21 +110,24 @@ do
          echo -e "\e[31mOther users do not have execute permissions on this file\e[39m"
       fi
 
+      # Test if the SUID bit has been set
       if test $(($permsDec & $SUID_BIT)) -eq $SUID_BIT
       then
          echo -e "\e[32mUsers executing this file will do so with \e[1m$user\e[0m\e[32m user's privileges\e[39m"
       fi
 
+      # Test if the SGID bit has been set
       if test $(($permsDec & $SGID_BIT)) -eq $SGID_BIT
       then
          echo -e "\e[32mUsers executing this file will do so with \e[1m$user\e[0m\e[32m group's privileges\e[39m"
       fi
 
+      # Test if the sticky bit has been set
       if test $(($permsDec & $STICKY_BIT)) -eq $STICKY_BIT
       then
          echo -e "\e[32mThe sticky bit is set on this file\e[39m"
       fi
-   else
-      echo "\e[31m$file does not exist\e[39m"
+   else # File doesn't exist
+      echo -e "\e[31m$file does not exist\e[39m"
    fi
 done
