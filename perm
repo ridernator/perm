@@ -3,6 +3,8 @@
 # Script which verbosely prints out the permissions of files or folders passed to it
 # Ciaron Rider (ciaron.rider+github@gmail.com)
 
+# Version 2.0
+
 # Usage : perm files
 
 # Bits we are looking for
