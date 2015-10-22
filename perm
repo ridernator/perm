@@ -6,18 +6,18 @@
 # Usage : perm files
 
 # Bits we are looking for
-OTHER_EXECUTE=1
-  OTHER_WRITE=2
-   OTHER_READ=4
-GROUP_EXECUTE=8
-  GROUP_WRITE=16
-   GROUP_READ=32
-OWNER_EXECUTE=64
-  OWNER_WRITE=128
-   OWNER_READ=256
-   STICKY_BIT=512
-     SGID_BIT=1024
-     SUID_BIT=2048
+OTHER_EXECUTE=$((2**0))
+  OTHER_WRITE=$((2**1))
+   OTHER_READ=$((2**2))
+GROUP_EXECUTE=$((2**3))
+  GROUP_WRITE=$((2**4))
+   GROUP_READ=$((2**5))
+OWNER_EXECUTE=$((2**6))
+  OWNER_WRITE=$((2**7))
+   OWNER_READ=$((2**8))
+   STICKY_BIT=$((2**9))
+     SGID_BIT=$((2**10))
+     SUID_BIT=$((2**11))
 
 # For each file passed in as a command line argument
 for file in "$@"
